@@ -1,15 +1,13 @@
-import { express, path, fs, fileURLToPath,getVersionedPath, log, icon  } from '#import';
+import { express, path, fs, fileURLToPath, getVersionedPath, log, icon } from '#import';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-const runningApps = {};
 
 function addStaticFiles(siteFolder) {
   return express.static(path.join(__dirname, '..', `sites/${siteFolder}/public`), {
     etag: true,
     maxAge: '30d',
-    immutable: true
+    immutable: true,
   });
 }
 
@@ -20,79 +18,82 @@ function addFileVersions(siteFolder) {
   };
 }
 
-async function startSites(sites, links, isProd) {
+function createFontsMiddleware() {
   const fontsBasePath = path.join(__dirname, '..', 'library/node_modules');
+  const router = express.Router();
 
-  log(`🚀 Инициализация всех сайтов (${sites.length})...`);
-
-  const fontMiddleware = express.Router();
-  fontMiddleware.get('/fonts/:fontPackage/:filePath(*)', (req, res) => {
+  router.get('/fonts/:fontPackage/:filePath(*)', (req, res) => {
     const { fontPackage, filePath } = req.params;
     const candidates = [
       path.join(fontsBasePath, '@fontsource-variable', fontPackage, filePath),
       path.join(fontsBasePath, '@fontsource', fontPackage, filePath),
     ];
 
-    for (const filePath of candidates) {
-      if (fs.existsSync(filePath)) return res.sendFile(filePath);
+    for (const candidatePath of candidates) {
+      if (fs.existsSync(candidatePath)) return res.sendFile(candidatePath);
     }
 
     res.status(404).send('Font file not found');
   });
 
-  try {
-    await Promise.allSettled(sites.map(async (site) => {
-      if (runningApps[site.name]) {
-        log(`ℹ️ Сайт ${site.name} уже запущен`);
-        return;
-      }
+  return router;
+}
 
-      try {
-        log(`🔄 Запуск сайта ${site.name} (${site.folder})`);
+/**
+ * Создаёт router (Express app) для конкретного сайта.
+ * ВАЖНО: НЕ слушает порт. Это нужно для динамической маршрутизации по Host.
+ */
+export async function buildSiteApp(site, links, isProd) {
+  const app = express();
 
-        const app = express();
+  app.locals.icon = icon; // EJS helper: <%- icon('telegram', { size: 20 }) %>
 
-        app.locals.icon = icon; // <-- хелпер доступен в EJS как <%- icon('telegram', { size: 20 }) %>
+  app.set('view engine', 'ejs');
+  app.set('views', path.join(__dirname, '..', `sites/${site.folder}/views`));
 
-        app.set("view engine", "ejs");
-        app.set("views", path.join(__dirname, '..', `sites/${site.folder}/views`));
-        app.use(addStaticFiles(site.folder));
-        app.use(addFileVersions(site.folder));
-        app.use((req, res, next) => {
-          res.locals.site_link = site.url;
-          res.locals.links = links;
-          next();
-        });
+  app.use(addStaticFiles(site.folder));
+  app.use(addFileVersions(site.folder));
 
-        app.use(fontMiddleware);
+  // locals
+  app.use((req, res, next) => {
+    res.locals.site_link = site.url;
+    res.locals.links = links;
+    next();
+  });
 
-        try {
-          const routePath = new URL(`../sites/${site.folder}/routes/siteRoutes.js`, import.meta.url);
-          const { default: routes } = await import(routePath.href);
-          app.use(express.json());
-          app.use(express.urlencoded({ extended: true }));
-          app.use("/", routes);
+  // fonts (shared handler)
+  app.use(createFontsMiddleware());
 
-          const server = app.listen(site.port, '0.0.0.0')
-            .on('listening', () => {
-              log(`✅ ${site.name} работает на ${site.local_link}`);
-              if (isProd) log(`🌍 Доступен по прод-ссылке: ${site.url}`);
-            })
-            .on('error', (err) => {
-              log(`❌ Ошибка запуска сервера для ${site.name}:`, err);
-            });
+  // body parsers (нужны для form/json во всех сайтах)
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
 
-          runningApps[site.name] = server;
-        } catch (err) {
-          log(`❌ Ошибка при подключении маршрутов для сайта ${site.name}:`, err.message || err.toString());
-        }
-      } catch (err) {
-        log(`❌ Ошибка при инициализации сайта ${site.name}:`, err);
-      }
-    }));
-  } catch (err) {
-    log('❌ Общая ошибка при запуске сайтов:', err);
-  }
+  // routes
+  const routePath = new URL(`../sites/${site.folder}/routes/siteRoutes.js`, import.meta.url);
+  const { default: routes } = await import(routePath.href);
+  app.use('/', routes);
+
+  log(`✅ Router сайта ${site.name} (${site.folder}) готов`);
+  if (isProd) log(`🌍 Прод-ссылка: ${site.url}`);
+
+  return app;
+}
+
+/**
+ * Backward-compatible default export (чтобы не ломать импорты).
+ * Теперь возвращает Map(host -> express app) и НЕ запускает прослушивание портов.
+ */
+async function startSites(sites, links, isProd) {
+  const map = new Map();
+
+  await Promise.all(
+    sites.map(async (site) => {
+      const app = await buildSiteApp(site, links, isProd);
+      map.set(site.__host, app);
+    })
+  );
+
+  return map;
 }
 
 export default startSites;

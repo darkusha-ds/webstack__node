@@ -5,11 +5,11 @@ FROM node:20-slim
 WORKDIR /app
 
 # Копируем package.json и устанавливаем зависимости
-COPY node_app/node-app/package*.json ./
+COPY web_stack/webstack__node/node-app/package*.json ./
 RUN npm install
 
 # Копируем приложение
-COPY node_app/node-app/ .
+COPY web_stack/webstack__node/node-app/ .
 
 # Экспонируем порты
 EXPOSE 3000-3010 4000-4010

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ru" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Darkusha — links</title>
+
+    <!-- Adaptive status bar color -->
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { darkMode: 'class' }</script>
+
+    <!-- Prevent theme flash -->
+    <script src="scripts/preload_theme.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/style.css" />
+    <link rel="shortcut icon" href="img/favicon.jpg" />
+  </head>
+
+  <body class="bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+    <!-- Ambient blobs -->
+    <div class="ambient_blob">
+      <div class="blob_1"></div>
+      <div class="blob_2"></div>
+    </div>
+
+    <main class="relative mx-auto max-w-2xl px-6 py-10">
+      <!-- Nav / theme -->
+      <div class="flex items-center justify-end">
+        <button id="themeToggle" class="neon-toggle" aria-label="Переключить тему" title="Клик: переключить тему • Alt+клик: системная тема">🌗</button>
+      </div>
+
+      <!-- HERO -->
+      <section class="mt-6 flex items-center gap-5">
+        <img src="img/favicon.jpg" alt="avatar" width="64" height="64" loading="lazy"
+             class="h-16 w-16 rounded-2xl ring-1 ring-white/15 shadow-[0_0_30px_rgba(56,189,248,.35)] object-cover"/>
+        <div>
+          <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight glitch" data-text="darkusha_ds">darkusha_ds</h1>
+          <p class="mt-1 text-slate-400">Developer • creator • just ship it 🚀</p>
+        </div>
+      </section>
+
+      <!-- LINKS -->
+      <% const socials = [
+        { name: 'telegram',  label: 'Telegram',  url: 'https://t.me/darkusha_ds',                        gradient: 'from-cyan-500 to-blue-600'     },
+        { name: 'vk',        label: 'VK',        url: 'https://vk.com/dark_angle',                       gradient: 'from-blue-600 to-indigo-600'   },
+        { name: 'instagram', label: 'Instagram*', url: 'https://instagram.com/_i_t_m_a_n_',               gradient: 'from-rose-500 to-fuchsia-600'  },
+        { name: 'github',    label: 'GitHub',    url: 'https://github.com/darkusha-ds',                  gradient: 'from-zinc-700 to-zinc-900'     },
+        { name: 'discord',   label: 'Discord',   url: 'https://discordapp.com/users/391682780322594840', gradient: 'from-indigo-600 to-violet-600' },
+      ]; %>
+
+      <div class="links-panel mt-8 p-4 sm:p-6">
+        <section class="space-y-3 sm:space-y-4">
+          <% socials.forEach(s => { %>
+            <a href="<%= s.url %>" target="_blank" rel="noopener noreferrer me" aria-label="<%= s.label %>"
+              class="neon-btn <%= s.gradient %>">
+              <span class="icon" aria-hidden="true">
+                <%- icon(s.name, { size: 20, strokeWidth: 0.1 }) %>
+              </span>
+              <span class="label"><%= s.label %></span>
+              <span class="spacer" aria-hidden="true"></span>
+            </a>
+          <% }) %>
+        </section>
+      </div>
+
+      <footer class="mt-10 text-center text-xs text-slate-500">
+        © 2022-<span id="year"></span>
+        <a href="https://t.me/darkusha_ds"> t.me/darkusha_ds</a>
+        <br>
+        <span>*Признана экстремистской организацией и запрещена на территории РФ</span>
+      </footer>
+    </main>
+
+    <script src="scripts/script.js"></script>
+  </body>
+</html

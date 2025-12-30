@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Предпросмотр шрифтов</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link id="fontStylesheet" rel="stylesheet" href="">
+</head>
+<body class="bg-gray-900 text-white p-6">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">Предпросмотр шрифтов</h1>
+
+        <!-- Управление текстом -->
+        <div class="flex space-x-4 mb-6">
+            <input type="text" id="preview-text" class="w-full p-2 border rounded text-black" value="Пример текста">
+            <input type="range" id="font-size-slider" min="16" max="64" value="32" class="w-1/4">
+            <span id="font-size-label" class="text-xl">32px</span>
+        </div>
+
+        <!-- Контейнер для шрифтов -->
+        <div id="font-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </div>
+
+    <script type="application/json" id="fontData">
+        <%- JSON.stringify(fonts) %>
+    </script>
+
+    <script>
+        const fontsData = JSON.parse(document.getElementById("fontData").textContent);
+        const fontList = document.getElementById("font-list");
+        const previewTextInput = document.getElementById("preview-text");
+        const fontSizeSlider = document.getElementById("font-size-slider");
+        const fontSizeLabel = document.getElementById("font-size-label");
+
+        function updatePreview() {
+            const text = previewTextInput.value;
+            const size = fontSizeSlider.value + "px";
+            fontSizeLabel.innerText = size;
+
+            document.querySelectorAll(".preview-text").forEach(el => {
+                el.innerText = text;
+                el.style.fontSize = size;
+            });
+        }
+
+        function renderFonts() {
+            fontList.innerHTML = "";
+
+            Object.keys(fontsData).forEach(fontName => {
+                const fontVariants = fontsData[fontName];
+
+                const fontContainer = document.createElement("div");
+                fontContainer.className = "p-4 border rounded bg-gray-800";
+
+                fontContainer.innerHTML = `<div class="font-bold text-lg">${fontName}</div>`;
+
+                Object.keys(fontVariants).forEach(weight => {
+                    const styles = fontVariants[weight];
+
+                    Object.keys(styles).forEach(style => {
+                        const file = styles[style];
+
+                        const preview = document.createElement("div");
+                        preview.className = "preview-text mt-2";
+                        preview.style.fontFamily = `'${fontName}', sans-serif`;
+                        preview.style.fontWeight = weight;
+                        preview.style.fontStyle = style === "italic" ? "italic" : "normal";
+                        preview.style.fontSize = fontSizeSlider.value + "px";
+                        preview.innerText = previewTextInput.value;
+
+                        const label = document.createElement("div");
+                        label.className = "text-sm text-gray-400";
+                        label.innerText = `${style === "italic" ? "Italic " : ""}${weight}`;
+
+                        fontContainer.appendChild(label);
+                        fontContainer.appendChild(preview);
+
+                        // Добавляем стиль @font-face в тег style
+                        const fontFace = `
+                            @font-face {
+                                font-family: '${fontName}';
+                                font-style: ${style};
+                                font-weight: ${weight};
+                                font-display: swap;
+                                src: url('/fonts/${file}') format('woff2');
+                            }
+                        `;
+                        const styleTag = document.createElement("style");
+                        styleTag.innerHTML = fontFace;
+                        document.head.appendChild(styleTag);
+                    });
+                });
+
+                fontList.appendChild(fontContainer);
+            });
+        }
+
+        previewTextInput.addEventListener("input", updatePreview);
+        fontSizeSlider.addEventListener("input", updatePreview);
+
+        renderFonts();
+    </script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Зоомагазин</title>
+    <style>
+        /* Стили для карточек товаров */
+        .product-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px;
+            width: 250px;
+            display: inline-block;
+            vertical-align: top;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-card img {
+            width: 100%;
+            max-height: 500px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .product-card h3 {
+            font-size: 18px;
+            color: #333;
+            margin: 10px 0;
+        }
+
+        .product-card p {
+            color: #777;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+
+        .product-card .price {
+            font-size: 16px;
+            font-weight: bold;
+            color: #e74c3c;
+            margin: 10px 0;
+        }
+
+        .product-card button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .product-card button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Добро пожаловать в зоомагазин</h1>
+
+    <!-- Форма поиска товаров -->
+    <form id="search-form" action="/search" method="get">
+        <input type="text" id="search-input" name="query" placeholder="Поиск товаров..." value="<%= query || '' %>">
+        <button type="submit">Поиск</button>
+    </form>
+
+    <!-- Категории -->
+    <div class="categories">
+        <h3>Категории</h3>
+        <ul>
+            <% categories.forEach(category => { %>
+                <li>
+                    <a href="/search?category_name=<%= category.category_name %>" class="<%= category.category_name == selectedCategory ? 'selected' : '' %>">
+                        <%= category.category_name %>
+                    </a>
+                </li>
+            <% }) %>
+        </ul>
+    </div>
+
+    <!-- Товары -->
+    <div class="products">
+        <h3>Товары</h3>
+        <% if (products.length > 0) { %>
+            <% products.forEach(product => { %>
+                <div class="product-card">
+                    <img src="/img/<%= product.image %>" alt="<%= product.name %>">
+                    <h3><%= product.name %></h3>
+                    <p><%= product.description %></p>
+                    <p class="price"><%= product.price %> ₽</p>
+                    <button>Купить</button>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <p>Товары не найдены.</p>
+        <% } %>
+    </div>
+
+</body>
+</html>

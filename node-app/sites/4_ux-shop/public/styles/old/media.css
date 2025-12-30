@@ -1,0 +1,27 @@
+@media (max-width: 800px) {
+    .logo {
+        display: none;
+    }
+    .loading-container {
+        text-align: center;
+        height: auto;
+    }
+    .loading-gif {
+        display: grid;
+        place-items: center;
+      }
+}
+
+@media (min-width: 801px) {
+    .loading-container {
+        background: #E7DFDD;
+        text-align: center;
+        padding: 20%;
+        z-index: 9999;
+    }
+    
+    .loading-gif {
+        max-width: 100%;
+        height: auto;
+    }
+}

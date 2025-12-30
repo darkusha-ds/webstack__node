@@ -1,0 +1,342 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap");
+body {
+  font-family: "Fredoka One", sans-serif;
+  line-height: 1.8;
+  background-color: #f4f0e6;
+  color: #4b4b4b;
+  margin: 0;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+main {
+  font-family: "Fredoka One", sans-serif;
+  padding: 40px;
+}
+
+.body-hide {
+  display: none;
+}
+
+.header {
+  font-family: "Fredoka One", sans-serif;
+  background-color: #ffffff;
+  color: #333;
+  padding: 20px;
+  text-align: center;
+  border-bottom: 2px solid #e0e0e0;
+  position: relative;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.header-logo {
+  font-family: "Fredoka One", sans-serif;
+  position: absolute;
+  top: 10px;
+  left: 30px;
+  height: 125px;
+}
+.header-logo-image {
+  font-family: "Fredoka One", sans-serif;
+  height: 125px;
+}
+.header-list {
+  margin: 10px auto;
+  max-width: 500px;
+  font-family: "Fredoka One", sans-serif;
+  list-style: none;
+  padding: 0;
+}
+.header-link {
+  font-family: "Fredoka One", sans-serif;
+  display: inline;
+  margin: 0 15px;
+}
+.header-link-text {
+  font-family: "Fredoka One", sans-serif;
+  color: #4b4b4b;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+.header-hide {
+  display: none;
+}
+
+#search-form {
+  position: relative;
+  max-width: 500px;
+  margin: 0 auto;
+}
+#search-input {
+  width: 93%;
+  padding: 15px;
+  font-size: 1rem;
+  border-radius: 25px;
+  border: 2px solid #ddd;
+  outline: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s ease-in-out;
+}
+#search-input:focus {
+  border-color: #ff5c5c; /* Цвет фокуса */
+}
+#search-btn {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #ff5c5c;
+  border: none;
+  padding: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+#search-btn i {
+  color: white;
+  font-size: 18px;
+}
+#search-btn:hover {
+  background-color: #ff4040;
+}
+
+.footer {
+  font-family: "Fredoka One", sans-serif;
+  text-align: center;
+  padding: 0px;
+  color: #4b4b4b;
+  border-radius: 10px;
+  position: relative;
+}
+.footer-center {
+  margin: 0 auto;
+  max-width: 500px;
+}
+.footer-hide {
+  display: none;
+}
+
+.hero {
+  font-family: "Fredoka One", sans-serif;
+  text-align: center;
+  background-color: #ebe7de;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 15px;
+  /* box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); */
+}
+.hero-content {
+  font-family: "Fredoka One", sans-serif;
+  max-width: 600px;
+  padding: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-image {
+  flex: 1;
+  max-width: 40%;
+  text-align: center;
+}
+.hero-image .image {
+  max-width: 100%;
+  height: auto;
+}
+.hero-text {
+  flex: 1;
+  max-width: 90%;
+  font-size: 20px;
+  text-align: left;
+  padding: 10px;
+}
+.hero-btn {
+  font-family: "Fredoka One", sans-serif;
+  background-color: #ff5c5c;
+  color: #fff;
+  border: none;
+  padding: 15px 30px;
+  cursor: pointer;
+  font-size: 1.2em;
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+}
+.hero-btn:hover {
+  font-family: "Fredoka One", sans-serif;
+  background-color: #d14b4b;
+}
+
+.error-container {
+  text-align: center;
+  padding: 50px;
+}
+.error-container img {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 20px;
+}
+.error-container h1 {
+  font-size: 3em;
+  margin-bottom: 20px;
+}
+.error-container p {
+  font-size: 1.5em;
+  color: #666;
+}
+.error-container a {
+  display: inline-block;
+  margin-top: 30px;
+  padding: 15px 30px;
+  background-color: #f29559;
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.2em;
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+}
+.error-container a:hover {
+  background-color: #e08542;
+}
+
+.contact-icons {
+  font-family: "Fredoka One", sans-serif;
+  margin-top: 20px;
+}
+.contact-icons img {
+  font-family: "Fredoka One", sans-serif;
+  margin: 0 10px;
+  height: 35px;
+  width: auto;
+  filter: drop-shadow(0 0 5px #666);
+}
+
+.product-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 15px;
+  width: 250px;
+  display: inline-block;
+  vertical-align: top;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: all 0.3s ease;
+  font-family: "Fredoka One", sans-serif;
+}
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+}
+.product-card img {
+  width: 100%;
+  max-height: 500px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  border-radius: 8px;
+}
+.product-card h3 {
+  font-size: 18px;
+  color: #333;
+  margin: 10px 0;
+}
+.product-card p {
+  color: #777;
+  font-size: 14px;
+  margin: 10px 0;
+}
+.product-card .price {
+  font-size: 16px;
+  color: #000000;
+  margin: 10px 0;
+}
+.product-card button {
+  background-color: #e7a342;
+  color: white;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.product-card button:hover {
+  background-color: #d39135;
+}
+
+.category-grid {
+  font-family: "Fredoka One", sans-serif;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 20px;
+}
+.category-item {
+  font-family: "Fredoka One", sans-serif;
+  background: #fff;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+.category-item:hover {
+  font-family: "Fredoka One", sans-serif;
+  transform: scale(1.05);
+}
+.category-item img {
+  font-family: "Fredoka One", sans-serif;
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 15px;
+  border-radius: 10px;
+}
+
+.categories ul {
+  list-style-type: none;
+  padding: 0;
+}
+.categories li {
+  margin-bottom: 10px;
+}
+.categories a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+}
+.categories .category-image {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  border-radius: 5px;
+}
+.categories a.selected {
+  font-weight: bold;
+  color: #28a745;
+}
+
+@media (max-width: 800px) {
+  .logo {
+    display: none;
+  }
+  .loading-container {
+    text-align: center;
+    height: auto;
+  }
+  .loading-gif {
+    display: grid;
+    place-items: center;
+  }
+}
+@media (min-width: 801px) {
+  .loading-container {
+    background: #E7DFDD;
+    text-align: center;
+    padding: 20%;
+    z-index: 9999;
+  }
+  .loading-gif {
+    max-width: 100%;
+    height: auto;
+  }
+}/*# sourceMappingURL=style.css.map */

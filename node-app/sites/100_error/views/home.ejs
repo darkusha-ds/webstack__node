@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="<%= getVersionedPath('img/favicon.jpg') %>">
+    <title><%= title %></title>
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700&display=swap">
+
+    <link rel="stylesheet" href="<%= getVersionedPath('styles/main.css') %>">
+    <link rel="stylesheet" href="<%= getVersionedPath('styles/all.min.css') %>">
+
+    
+    <!-- <link rel="preload" href="<%= getVersionedPath('styles/main.css') %>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="<%= getVersionedPath('styles/all.min.css') %>" as="style" onload="this.onload=null;this.rel='stylesheet'"> -->
+</head>
+<body>
+    <main>
+        <h1>4<span><i class="fas fa-ghost"></i></span>4</h1>
+        <h2>Error: 404 <%= message %></h2>
+        <p>Sorry, the page you're looking for cannot be accessed</p>
+    </main>
+</body>
+</html>

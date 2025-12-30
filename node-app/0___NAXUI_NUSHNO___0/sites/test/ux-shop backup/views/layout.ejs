@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <%- include('partials/head'); -%>
+</head>
+<body>
+    <% if (isMainPage == false && isErrorPage == false) { %>
+        <%- include('partials/header'); -%>
+
+        <%- include(body) %> <!-- Здесь будет вставлен основной контент -->
+
+        <%- include('partials/footer'); -%>
+        <script src="scripts/search.js"></script>
+    <% } %>
+
+    <% if (isMainPage == true && isErrorPage == false) { %>
+        <div class="home-header">
+            <%- include('partials/header'); -%>
+        </div>
+
+        <%- include(body) %> <!-- Здесь будет вставлен основной контент -->
+
+        <div class="home-footer">
+            <%- include('partials/footer'); -%>
+        </div>
+        
+        <script src="scripts/loading.js"></script>
+        <script src="scripts/search.js"></script>
+    <% } %>
+
+    <% if (isMainPage == false && isErrorPage == true) { %>
+        <%- include(body) %> <!-- Здесь будет вставлен основной контент -->
+    <% } %>
+</body>
+</html>

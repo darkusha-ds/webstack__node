@@ -1,0 +1,12 @@
+.contact-icons {
+    font-family: 'Fredoka One', sans-serif;
+    margin-top: 20px;
+}
+
+.contact-icons img {
+    font-family: 'Fredoka One', sans-serif;
+    margin: 0 10px;
+    height: 35px;
+    width: auto;
+    filter: drop-shadow(0 0 5px #666);
+}

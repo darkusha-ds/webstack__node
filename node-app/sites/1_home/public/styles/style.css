@@ -1,0 +1,274 @@
+/* ===== Base ===== */
+:root.tw-dark { color-scheme: dark; }
+:root {
+  --tw-border-spacing-x: 0;
+  --tw-border-spacing-y: 0;
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-rotate: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
+  --tw-pan-x: ;
+  --tw-pan-y: ;
+  --tw-pinch-zoom: ;
+  --tw-scroll-snap-strictness: proximity;
+  --tw-gradient-from-position: ;
+  --tw-gradient-via-position: ;
+  --tw-gradient-to-position: ;
+  --tw-ordinal: ;
+  --tw-slashed-zero: ;
+  --tw-numeric-figure: ;
+  --tw-numeric-spacing: ;
+  --tw-numeric-fraction: ;
+  --tw-ring-inset: ;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-shadow: 0 0 #0000;
+  --tw-shadow-colored: 0 0 #0000;
+  --tw-blur: ;
+  --tw-brightness: ;
+  --tw-contrast: ;
+  --tw-grayscale: ;
+  --tw-hue-rotate: ;
+  --tw-invert: ;
+  --tw-saturate: ;
+  --tw-sepia: ;
+  --tw-drop-shadow: ;
+  --tw-backdrop-blur: ;
+  --tw-backdrop-brightness: ;
+  --tw-backdrop-contrast: ;
+  --tw-backdrop-grayscale: ;
+  --tw-backdrop-hue-rotate: ;
+  --tw-backdrop-invert: ;
+  --tw-backdrop-opacity: ;
+  --tw-backdrop-saturate: ;
+  --tw-backdrop-sepia: ;
+  --tw-contain-size: ;
+  --tw-contain-layout: ;
+  --tw-contain-paint: ;
+  --tw-contain-style: ;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+
+/* ===== Blob animation utilities ===== */
+@keyframes blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%     { transform: translate(30px, -50px) scale(1.1); }
+  66%     { transform: translate(-20px, 20px) scale(0.9); }
+}
+.animate-blob { animation: blob 18s ease-in-out infinite; }
+.animation-delay-2000 { animation-delay: 2s; }
+.animation-delay-4000 { animation-delay: 4s; }
+
+
+/* ===== Background blobs (Ambient blobs) ===== */
+.ambient_blob {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  overflow: hidden;
+}
+.blob_1 {
+  position: absolute;
+  top: -10rem;
+  left: -8rem;
+  height: 42rem;
+  width: 42rem;
+  border-radius: 9999px;
+  background-image: radial-gradient(circle at 30% 30%, #22d3ee, transparent 55%), radial-gradient(circle at 70% 60%, #6366f1, transparent 55%);
+  --tw-blur: blur(64px);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+  opacity: 0.3;
+  animation: blob 18s ease-in-out infinite;
+}
+.blob_2 {
+  position: absolute;
+  bottom: -10rem;
+  right: -8rem;
+  height: 42rem;
+  width: 42rem;
+  border-radius: 9999px;
+  background-image: radial-gradient(circle at 40% 40%, #f472b6, transparent 55%), radial-gradient(circle at 60% 70%, #0ea5e9, transparent 55%);
+  --tw-blur: blur(64px);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+  opacity: 0.3;
+  animation: blob 18s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+
+/* ===== Neon buttons (glassmorphism) ===== */
+.neon-btn {
+  position: relative;
+  display: grid;
+  grid-template-columns: 28px 1fr 28px;
+  align-items: center;
+  gap: .9rem;
+  padding: .8rem 1rem;
+  min-height: 56px;
+  border-radius: 14px;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.12);
+  backdrop-filter: blur(8px);
+  background-color: rgba(255,255,255,.06);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 10px 30px -18px rgba(0,0,0,.7);
+  background-image: linear-gradient(135deg,
+    var(--tw-gradient-from) 0%,
+    color-mix(in oklab, var(--tw-gradient-from) 50%, var(--tw-gradient-to) 50%) 50%,
+    var(--tw-gradient-to) 100%);
+  background-size: 140% 140%;
+  background-clip: padding-box;
+  transition: transform .2s ease, box-shadow .3s ease, border-color .3s ease, background-position .4s ease;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation; text-decoration: none;
+}
+.neon-btn:hover {
+  transform: translateY(-2px);
+  background-position: 100% 50%;
+  box-shadow: 0 0 22px 2px rgba(56,189,248,.28), 0 30px 60px -25px rgba(0,0,0,.8);
+  border-color: rgba(255,255,255,.22);
+}
+.neon-btn:active { transform: translateY(-1px) scale(.99); }
+
+
+/* ===== Icon sizing ===== */
+.neon-btn .icon { display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; }
+.neon-btn .icon svg { width:24px; height:24px; display:block; transition: transform .2s ease; }
+.neon-btn .icon, .neon-btn .icon svg { color:#fff; }
+.neon-btn .icon svg * { fill: currentColor !important; stroke: currentColor !important; }
+.neon-btn:hover .icon svg { transform: scale(1.06); }
+
+
+/* ===== Label centered ===== */
+.neon-btn .label { text-align:center; font-weight:600; font-size:1.1rem; }
+.neon-btn .spacer { width:28px; height:28px; }
+
+
+/* ===== Theme toggle button ===== */
+.neon-toggle {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.06);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 14px rgba(56,189,248,.25);
+}
+.neon-toggle:hover { background: rgba(255,255,255,.1); }
+
+
+/* ===== Glitch effect ===== */
+.glitch { position: relative; }
+.glitch::after, .glitch::before {
+  content: attr(data-text);
+  position: absolute; inset: 0; pointer-events: none; opacity: .06;
+}
+.glitch::before { transform: translate(1px, 0); filter: hue-rotate(20deg); }
+.glitch::after  { transform: translate(-1px, 0); filter: hue-rotate(-20deg); }
+
+
+/* Motion reduce */
+@media (prefers-reduced-motion: reduce) {
+  .animate-blob { animation: none; }
+  .neon-btn, .neon-btn .icon svg { transition: none; }
+}
+
+
+
+/* =========================
+Light theme polishing (фон и блобы)
+========================= */
+html:not(.dark) { color-scheme: light; }
+
+
+/* Живой светлый фон */
+html:not(.dark) body {
+  background:
+    radial-gradient(1200px 900px at 80% 85%, rgba(255,226,239,.82) 0%, rgba(255,226,239,0) 60%),
+    radial-gradient(1100px 800px  at 18% 12%, rgba(230,243,255,.86) 0%, rgba(230,243,255,0) 55%),
+    radial-gradient(900px  700px  at 30% 95%, rgba(233,255,246,.82) 0%, rgba(233,255,246,0) 50%),
+    #fdfdfd;
+}
+
+
+/* блобы немного заметнее в светлой */
+html:not(.dark) .-z-10 .opacity-30 { opacity: .55 !important; }
+html:not(.dark) .blur-3xl { filter: blur(72px); }
+
+
+
+/* =========================
+Links panel
+========================= */
+
+
+/* Общая геометрия */
+.links-panel {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  padding: 1.5rem;
+}
+
+/* Тёмная панель */
+.dark .links-panel,
+.tw-dark .links-panel {
+  background: linear-gradient(180deg, rgba(17,24,39,.55), rgba(17,24,39,.34));
+  border: 1px solid rgba(255,255,255,.08);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow:
+    0 26px 60px -30px rgba(0,0,0,.65),
+    inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+.dark .links-panel::before,
+.tw-dark .links-panel::before {
+  content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+}
+
+
+/* СВЕТЛАЯ панель — стекло + ВИДИМАЯ ТЕНЬ */
+html:not(.dark) .links-panel {
+  background: linear-gradient(180deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.10) 100%);
+  border: 1px solid rgba(15,23,42,.09);
+  background-clip: padding-box;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  /* усилили внешнюю тень — как в тёмной по ощущению */
+  box-shadow:
+    0 26px 60px -30px rgba(2,6,23,.24),
+    0 10px 25px -18px rgba(2,6,23,.12),
+    inset 0 1px 0 rgba(255,255,255,.60);
+}
+
+html:not(.dark) .links-panel::before {
+  content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  box-shadow: inset 0 0 0 1px rgba(15,23,42,.05);
+}
+
+
+/* ТЕНИ ДЛЯ КНОПОК — светлая тема */
+html:not(.dark) .neon-btn {
+  /* та же форма, но тень видимее на светлом */
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.92),
+    0 14px 34px -22px rgba(2,6,23,.26);
+}
+
+html:not(.dark) .neon-btn:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.92),
+    0 22px 54px -28px rgba(2,6,23,.30);
+}

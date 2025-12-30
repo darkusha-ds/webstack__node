@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <%- include('layouts/head'); -%>
+</head>
+<body>
+    <div class="loading-container">
+        <video src="video/loading_gif.mp4" autoplay loop muted playsinline class="loading-video"></video>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(function() {
+                window.location.href = "/home";
+            }, 3000); // 3 секунды
+        });
+    </script>
+</body>
+</html>

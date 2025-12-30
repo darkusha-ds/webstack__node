@@ -1,0 +1,60 @@
+.category-grid {
+    font-family: 'Fredoka One', sans-serif;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+}
+
+.category-item {
+    font-family: 'Fredoka One', sans-serif;
+    background: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.category-item:hover {
+    font-family: 'Fredoka One', sans-serif;
+    transform: scale(1.05);
+}
+
+.category-item img {
+    font-family: 'Fredoka One', sans-serif;
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 15px;
+    border-radius: 10px;
+}
+
+
+
+/* Стили для изображений категорий */
+.categories ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.categories li {
+    margin-bottom: 10px;
+}
+
+.categories a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #333;
+}
+
+.categories .category-image {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+    border-radius: 5px;
+}
+
+.categories a.selected {
+    font-weight: bold;
+    color: #28a745;
+}

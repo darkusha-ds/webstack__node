@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Fonts Clone</title>
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+    <h1>Список шрифтов</h1>
+    <ul id="font-list"></ul>
+
+    <script>
+        async function loadFonts() {
+            const response = await fetch('/');
+            const fonts = await response.json();
+            const fontList = document.getElementById('font-list');
+            
+            fonts.forEach(font => {
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="/font/${font.id}">${font.name}</a>`;
+                fontList.appendChild(li);
+            });
+        }
+
+        loadFonts();
+    </script>
+</body>
+</html>

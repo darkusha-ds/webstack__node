@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Google Fonts Клон</title>
+  <link rel="stylesheet" href="/styles/main.css">
+</head>
+<body>
+  <header>
+    <h1>Шрифты</h1>
+  </header>
+
+  <main>
+    <div class="font-list">
+      <% fontGroups.sort((a, b) => a.name.localeCompare(b.name, 'ru', { sensitivity: 'base' })); %>
+      <% fontGroups.forEach(group => { %>
+        <div class="font-card">
+          <a href="/font/<%= group.name %>">
+            <h2><%= group.name %></h2>
+          </a>
+          <% if (group.subfamilies && group.subfamilies.length > 0) { %>
+            <ul>
+              <% group.subfamilies.forEach(sub => { %>
+                <li>
+                  <a href="/font/<%= group.folder %>/<%= sub.name %>"><%= sub.name %></a>
+                </li>
+              <% }) %>
+            </ul>
+          <% } %>
+        </div>
+      <% }) %>
+    </div>
+  </main>
+</body>
+</html>

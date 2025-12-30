@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title><%= family %> | Fontsource</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net/" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=<%= family %>:wght@100..900&display=swap" />
+    <style>
+      body {
+        margin: 0;
+        font-family: 'Inter', sans-serif;
+        background-color: #fff;
+        color: #111;
+      }
+
+      header {
+        background: #0f1626;
+        color: white;
+        padding: 1rem 2rem;
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+
+      main {
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+
+      .preview {
+        font-family: '<%= family %>', sans-serif;
+        font-size: 32px;
+        font-weight: 400;
+      }
+
+      .controls {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        max-width: 400px;
+      }
+
+      .controls label {
+        font-weight: bold;
+      }
+
+      input[type="range"],
+      input[type="text"] {
+        width: 100%;
+        padding: 0.5rem;
+        font-size: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header><%= family %></header>
+    <main>
+      <div class="controls">
+        <label for="previewText">Preview Text</label>
+        <input type="text" id="previewText" value="Sphinx of black quartz, judge my vow.">
+
+        <label for="fontSize">Font Size</label>
+        <input type="range" id="fontSize" min="12" max="96" value="32">
+      </div>
+
+      <div class="preview" id="fontPreview">
+        Sphinx of black quartz, judge my vow.
+      </div>
+    </main>
+    <script>
+      const previewText = document.getElementById('previewText');
+      const fontSize = document.getElementById('fontSize');
+      const fontPreview = document.getElementById('fontPreview');
+
+      function updatePreview() {
+        fontPreview.textContent = previewText.value;
+        fontPreview.style.fontSize = fontSize.value + 'px';
+      }
+
+      previewText.addEventListener('input', updatePreview);
+      fontSize.addEventListener('input', updatePreview);
+
+      updatePreview();
+    </script>
+  </body>
+</html>

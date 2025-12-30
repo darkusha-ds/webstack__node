@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <%- include('partials/head'); -%>
+</head>
+<body>
+    <% if (isMainPage == false && isErrorPage == false) { %>
+        <%- include('partials/header'); -%>
+
+        <%- include(body) %>
+
+        <%- include('partials/footer'); -%>
+    <% } %>
+
+    <% if (isMainPage == true && isErrorPage == false) { %>
+        <div class="header-hide">
+            <%- include('partials/header'); -%>
+        </div>
+
+        <%- include(body) %>
+
+        <div class="footer-hide">
+            <%- include('partials/footer'); -%>
+        </div>
+        
+        <script src="scripts/loading.js"></script>
+    <% } %>
+
+    <% if (isMainPage == false && isErrorPage == true) { %>
+        <%- include(body) %>
+    <% } %>
+</body>
+</html>

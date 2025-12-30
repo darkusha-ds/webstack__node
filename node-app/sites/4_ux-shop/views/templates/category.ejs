@@ -1,0 +1,16 @@
+<div class="categories">
+    <h2>Категории</h2>
+    <div class="category-grid">
+        <div class="category-item" onclick="window.location.href='/product';">
+            <img src="img/whiskas_real.png" alt="Все товары" />
+            <p>Все товары</p>
+        </div>
+        <% categories.forEach(category => { %>
+            <div class="category-item" onclick="window.location.href='/search?category_name=<%= category.category_name %>';">
+                <img src="/img/<%= category.category_image || 'default.png' %>" alt="<%= category.category_name %>">
+                <p><%= category.category_name %></p>
+            </div>
+        <% }) %>
+
+    </div>
+</div>

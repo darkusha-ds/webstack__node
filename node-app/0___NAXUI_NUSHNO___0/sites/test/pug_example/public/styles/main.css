@@ -1,0 +1,16 @@
+/* main.css for Site 2 */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f2e5f9;
+}
+header {
+    background: #9d00f2;
+    color: #fff;
+    padding: 1rem;
+    text-align: center;
+}
+main {
+    padding: 2rem;
+}

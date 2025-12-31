@@ -6,20 +6,28 @@ import {
   startSites,
 } from '#import';
 
-// --- runtime state
-let sites = [];              // актуальные сайты (из БД)
-let links = {};              // name -> url
-let hostToSite = new Map();  // host -> site
-let hostToApp = new Map();   // host -> express app (router)
+import http from 'http';
 
-const PORT = Number(process.env.PORT || 3000);
+// --------------------
+// CONFIG
+// --------------------
+const PROD_PORT = Number(process.env.PORT || 3000);
+const POLL_MS = Number(process.env.SITES_POLL_MS || 3000);
+
+// --------------------
+// RUNTIME STATE
+// --------------------
+let sites = [];           // enabled sites from DB
+let links = {};           // name -> url (dev: localhost:port)
+let keyToApp = new Map(); // prod: host -> app, dev: port -> app
+
+// DEV only: port -> http.Server
+const devServers = new Map();
 
 db.on('error', (err) => log('❌ PostgreSQL ошибка:', err));
 
 function normalizeHost(hostHeader) {
-  const raw = (hostHeader || '').toString().trim().toLowerCase();
-  // убираем порт, если вдруг прилетел
-  return raw.split(':')[0];
+  return (hostHeader || '').toString().toLowerCase().split(':')[0];
 }
 
 function hostFromUrl(url) {
@@ -30,157 +38,217 @@ function hostFromUrl(url) {
   }
 }
 
+/**
+ * ВАЖНО:
+ * - PROD: key = host (из site.url)
+ * - DEV : key = port (из site.port), url = http://localhost:port
+ */
 function buildRuntimeFromRows(rows) {
   const nextSites = [];
   const nextLinks = {};
-  const nextHostToSite = new Map();
 
-  rows.forEach((site) => {
-    // ВАЖНО: теперь сайт НЕ обязан иметь свой порт.
-    // Оставляем поле port как историческое, но оно больше не используется для listen.
-
-    const prodUrl = site.url;
-    const host = hostFromUrl(prodUrl);
-
-    // если url битый — пропускаем
-    if (!host) {
-      log(`⚠️ Пропущен сайт ${site.name}: некорректный url=${site.url}`);
-      return;
+  for (const site of rows) {
+    if (!site.folder) {
+      log(`⚠️ Пропущен сайт ${site.name}: пустой folder`);
+      continue;
     }
 
-    // сохраняем host прямо в объекте (удобно для startSites)
-    site.__host = host;
+    if (!site.port) {
+      log(`⚠️ Пропущен сайт ${site.name}: пустой port`);
+      continue;
+    }
 
-    // ссылку в locals оставляем как раньше (в dev можно подменять на локальную)
-    site.local_link = `http://localhost:${PORT}`;
-    site.url = isProd ? prodUrl : site.local_link;
+    const portNum = Number(site.port);
+    if (!Number.isFinite(portNum)) {
+      log(`⚠️ Пропущен сайт ${site.name}: некорректный port=${site.port}`);
+      continue;
+    }
+
+    if (isProd) {
+      const host = hostFromUrl(site.url);
+      if (!host) {
+        log(`⚠️ Пропущен сайт ${site.name}: некорректный url=${site.url}`);
+        continue;
+      }
+      site.__key = host;
+      nextLinks[site.name] = site.url;
+    } else {
+      site.__key = String(portNum);
+      nextLinks[site.name] = `http://localhost:${portNum}`;
+    }
 
     nextSites.push(site);
-    nextLinks[site.name] = site.url;
-    nextHostToSite.set(host, site);
-  });
+  }
 
-  return { nextSites, nextLinks, nextHostToSite };
+  return { nextSites, nextLinks };
+}
+
+async function fetchEnabledSites() {
+  const { rows } = await db.query('SELECT * FROM sites WHERE is_enable = true');
+  return rows;
 }
 
 async function reloadSitesFromDb() {
-  const { rows } = await db.query('SELECT * FROM sites WHERE is_enable = true');
-  const { nextSites, nextLinks, nextHostToSite } = buildRuntimeFromRows(rows);
+  const rows = await fetchEnabledSites();
+  const { nextSites, nextLinks } = buildRuntimeFromRows(rows);
 
   sites = nextSites;
   links = nextLinks;
-  hostToSite = nextHostToSite;
 
-  log(`📦 Сайты из БД: ${sites.map((s) => s.name).join(', ') || '(пусто)'}`);
+  log(`📦 Enabled: ${sites.map(s => `${s.name}:${s.port}`).join(', ') || '(empty)'}`);
 }
 
-async function rebuildHostRouters() {
-  // Создаём/пересоздаём express apps для каждого host
-  // startSites теперь возвращает Map(host -> express app)
-  hostToApp = await startSites(sites, links, isProd);
+async function rebuildApps() {
+  keyToApp = await startSites(sites, links, isProd);
 }
 
-async function loadSitesAndStartOnce() {
-  await reloadSitesFromDb();
-  await rebuildHostRouters();
-}
+/**
+ * DEV: синхронизирует реальный набор слушателей (портов) с БД.
+ * - если порт появился -> listen
+ * - если порт исчез -> close
+ */
+async function syncDevServers(gatewayApp) {
+  const desiredPorts = new Set(
+    sites
+      .map(s => Number(s.port))
+      .filter(p => Number.isFinite(p))
+  );
 
-async function loadSitesAndStartWithRetry(retries = 5, delay = 2000) {
-  for (let i = 1; i <= retries; i++) {
-    try {
-      await loadSitesAndStartOnce();
-      return;
-    } catch (err) {
-      log(`⚠️ Попытка ${i} из ${retries} — ошибка: ${err.message || err}`);
-      if (i === retries) {
-        log('❌ Не удалось загрузить сайты/БД после нескольких попыток.');
-        process.exit(1);
-      }
-      await new Promise((res) => setTimeout(res, delay));
+  // stop removed ports
+  for (const [port, srv] of devServers.entries()) {
+    if (!desiredPorts.has(port)) {
+      await new Promise((resolve) => {
+        srv.close(() => {
+          log(`🔴 DEV stopped :${port}`);
+          resolve();
+        });
+      });
+      devServers.delete(port);
     }
+  }
+
+  // start new ports
+  for (const port of desiredPorts) {
+    if (devServers.has(port)) continue;
+
+    const srv = http.createServer(gatewayApp);
+    await new Promise((resolve, reject) => {
+      srv.once('error', reject);
+      srv.listen(port, '0.0.0.0', () => {
+        log(`🟢 DEV listening http://localhost:${port}`);
+        resolve();
+      });
+    });
+
+    devServers.set(port, srv);
   }
 }
 
-function pickFallbackHost() {
-  // 1) errors.dark-angel.ru, если есть
-  const preferred = [...hostToSite.keys()].find((h) => h.startsWith('errors.'));
-  if (preferred) return preferred;
-
-  // 2) любой первый
-  return hostToSite.keys().next().value || null;
+function pickFallbackKey() {
+  return sites[0]?.__key || null;
 }
 
-function monitorUpdates() {
-  setInterval(async () => {
-    try {
-      const { rows } = await db.query('SELECT * FROM sites WHERE is_enable = true');
-      const { nextSites, nextLinks, nextHostToSite } = buildRuntimeFromRows(rows);
-
-      // сравнение по host
-      const currentHosts = new Set(hostToSite.keys());
-      const newHosts = new Set(nextHostToSite.keys());
-
-      const added = [...newHosts].filter((h) => !currentHosts.has(h));
-      const removed = [...currentHosts].filter((h) => !newHosts.has(h));
-
-      if (added.length || removed.length) {
-        log(`🔄 Обновление сайтов. Добавлено: ${added.join(', ') || '-'}, удалено: ${removed.join(', ') || '-'}`);
-      }
-
-      // обновляем runtime
-      sites = nextSites;
-      links = nextLinks;
-      hostToSite = nextHostToSite;
-
-      // пересобираем роутеры (проще и надёжнее)
-      await rebuildHostRouters();
-    } catch (err) {
-      log('❌ Ошибка при обновлении сайтов из PostgreSQL:', err.message || err);
-    }
-  }, 10000);
-}
-
-async function init() {
-  await loadSitesAndStartWithRetry();
-
-  // --- main dynamic host router
+function makeGatewayApp() {
   const app = express();
 
   app.use((req, res, next) => {
-    const host = normalizeHost(req.headers.host);
+    let key;
 
-    // если нет прямого совпадения — отдаём fallback
-    const selectedHost = hostToApp.has(host) ? host : pickFallbackHost();
-
-    if (!selectedHost) {
-      return res.status(503).send('No sites configured');
+    if (isProd) {
+      key = normalizeHost(req.headers.host);
+    } else {
+      // В DEV ключ = порт на котором пришёл запрос
+      key = String(req.socket.localPort);
     }
 
-    req.__siteHost = selectedHost;
+    const selectedKey = keyToApp.has(key) ? key : pickFallbackKey();
+    if (!selectedKey) return res.status(503).send('No sites configured');
+
+    req.__siteKey = selectedKey;
     next();
   });
 
-  // делегируем в app конкретного сайта
   app.use((req, res, next) => {
-    const h = req.__siteHost;
-    const siteApp = hostToApp.get(h);
-
-    if (!siteApp) {
-      return res.status(502).send('Site router not ready');
-    }
-
+    const siteApp = keyToApp.get(req.__siteKey);
+    if (!siteApp) return res.status(502).send('Site app not ready');
     return siteApp(req, res, next);
   });
 
-  app.listen(PORT, '0.0.0.0', () => {
-    log(`🚀 Dynamic host gateway запущен на :${PORT}`);
-    log(`🌐 Hosts: ${[...hostToSite.keys()].join(', ') || '(пусто)'}`);
-  });
+  return app;
+}
 
-  monitorUpdates();
+async function startProd(gatewayApp) {
+  gatewayApp.listen(PROD_PORT, '0.0.0.0', () => {
+    log(`🚀 PROD gateway listening on :${PROD_PORT}`);
+  });
+}
+
+async function startDev(gatewayApp) {
+  // стартуем listeners только по БД
+  await syncDevServers(gatewayApp);
+}
+
+function runtimeSignature() {
+  // чтобы понимать, реально ли что-то изменилось
+  // (is_enable уже отфильтрован, значит сравниваем набор ключей + folder + port)
+  return sites
+    .map(s => `${s.__key}|${s.folder}|${s.port}`)
+    .sort()
+    .join(',');
+}
+
+function startMonitor(gatewayApp) {
+  let lastSig = runtimeSignature();
+
+  setInterval(async () => {
+    try {
+      const rows = await fetchEnabledSites();
+      const { nextSites, nextLinks } = buildRuntimeFromRows(rows);
+
+      const nextSig = nextSites
+        .map(s => `${s.__key}|${s.folder}|${s.port}`)
+        .sort()
+        .join(',');
+
+      if (nextSig === lastSig) return;
+
+      // применяем новое состояние
+      sites = nextSites;
+      links = nextLinks;
+
+      log(`🔄 Sites changed: ${sites.map(s => `${s.name}:${s.port}`).join(', ') || '(empty)'}`);
+
+      // пересобрать роутеры
+      await rebuildApps();
+
+      // DEV: поднимать/гасить listeners по портам
+      if (!isProd) {
+        await syncDevServers(gatewayApp);
+      }
+
+      lastSig = nextSig;
+    } catch (err) {
+      log('❌ Monitor error:', err?.message || err);
+    }
+  }, POLL_MS);
+}
+
+async function init() {
+  await reloadSitesFromDb();
+  await rebuildApps();
+
+  const gatewayApp = makeGatewayApp();
+
+  if (isProd) {
+    await startProd(gatewayApp);
+  } else {
+    await startDev(gatewayApp);
+  }
+
+  startMonitor(gatewayApp);
 }
 
 init().catch((err) => {
-  log('❌ Ошибка при инициализации:', err.message || err);
+  log('❌ Init error:', err?.message || err);
   process.exit(1);
 });
